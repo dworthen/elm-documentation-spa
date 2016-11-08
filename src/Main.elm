@@ -24,9 +24,11 @@ main =
 
 fromUrl : String -> String
 fromUrl url =
-  String.dropLeft 1 url
+    url
+        |> String.dropLeft 1
+        |> String.toLower
 
 
 urlParser : Navigation.Parser Route
 urlParser =
-  Navigation.makeParser (Page << fromUrl << .hash)
+    Navigation.makeParser (Page << fromUrl << .hash)
