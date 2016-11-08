@@ -6,6 +6,24 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "devDependencies": {
+    "css-loader": "^0.25.0",
+    "elm-hot-loader": "*",
+    "elm-webpack-loader": "*",
+    "font-awesome": "^4.6.3",
+    "gulp": "^3.8.10",
+    "gulp-replace": "^0.5.4",
+    "gulp-sourcemaps": "^2.0.0",
+    "gulp-uglify": "^2.0.0",
+    "gulp-zip": "^3.0.2",
+    "run-sequence": "^1.0.2",
+    "style-loader": "*",
+    "url-loader": "*",
+    "webpack": "*",
+    "webpack-dev-server": "*",
+    "webpack-stream": "^3.2.0",
+    "yargs": "^6.0.0"
+  },
   "author": "Derek Worthen",
   "license": "ISC"
 }
