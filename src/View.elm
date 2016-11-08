@@ -1,4 +1,4 @@
-module View exposing (..)
+module View exposing (root)
 
 import Types exposing (..)
 import Html exposing (..)
@@ -9,12 +9,15 @@ import Html.Events exposing (..)
 root : Model -> Html Msg
 root model =
     let
-        page = 
-            case model.route of
-                Page val -> val
-                ErrorPage val -> val
+        contents = 
+            case model.loading of
+                True -> [ text "Loading..." ]
+                False -> 
+                    case model.route of
+                        Page val -> [ renderBody model, renderSideNav model ]
+                        ErrorPage val -> [ renderError val ]
     in
-        div [ class "center" ]
+        div [ class "center" ] <|
             [ text "Hello World"
             , br [] [] 
             , a [ href "#home" ] [ text "#home" ]
@@ -23,4 +26,21 @@ root model =
             , br [] []
             , text model.documentationSrc
             , br [] []
-            , text page ]
+            ] ++ contents
+
+
+renderSideNav : Model -> Html Msg
+renderSideNav model =
+    div [ class "pkg-nav" ] 
+    []
+
+
+renderBody : Model -> Html Msg
+renderBody model =
+    div [ class "entry-list" ] 
+    []
+
+
+renderError : String -> Html msg
+renderError message =
+    div [] [ text message ]

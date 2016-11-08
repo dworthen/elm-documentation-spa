@@ -6,7 +6,7 @@ import Types exposing (..)
 
 init : Flags -> Route -> (Model, Cmd msg)
 init { documentationSrc } route =
-    (Model documentationSrc route, Cmd.none)
+    (Model documentationSrc False route, Cmd.none)
 
 
 urlUpdate : Route -> Model -> (Model, Cmd msg)

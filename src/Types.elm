@@ -12,6 +12,7 @@ type Route
 
 type alias Model =
     { documentationSrc : String
+    , loading : Bool
     , route : Route 
     }
 
