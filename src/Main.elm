@@ -25,7 +25,7 @@ main =
 fromUrl : String -> String
 fromUrl url =
     url
-        |> String.dropLeft 1
+        |> String.dropLeft 2
         |> String.toLower
 
 
