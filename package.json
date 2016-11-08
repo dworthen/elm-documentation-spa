@@ -4,7 +4,10 @@
   "description": "Example SPA presenting elm documentation.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "webpack --watch --inline",
+    "dev": "webpack-dev-server --inline --hot",
+    "build": "webpack"
   },
   "devDependencies": {
     "css-loader": "^0.25.0",
