@@ -4,6 +4,7 @@ import Types exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
+import Regex
 import Markdown
 import String
 import Dict
@@ -65,7 +66,7 @@ renderBody model page =
 
 
 markdownOptions : Markdown.Options
-markdownOptions = 
+markdownOptions =
     { githubFlavored = Just { tables = False, breaks = False }
     , defaultHighlighting = Just "elm"
     , sanitize = False
@@ -73,9 +74,102 @@ markdownOptions =
     }
 
 
+atDocsRegex : Regex.Regex
+atDocsRegex =
+    "@docs\\s([^\\n\\\\]*)"
+        |> Regex.regex
+        |> Regex.caseInsensitive
+
+
+replaceAtDocs : Document -> Regex.Match -> String
+replaceAtDocs doc match =
+    case match.submatches of
+        (Just h) :: _ ->
+            h
+                |> String.split ", "
+                |> renderSubDocs doc
+
+        _ ->
+            ""
+
+
+findType : Document -> String -> Maybe String
+findType doc name =
+    let
+        search el ac =
+            if el.name == name then
+                Just <| renderType el
+            else
+                ac
+    in
+        List.foldl search Nothing doc.types
+
+
+findValue : Document -> String -> Maybe String
+findValue doc name =
+    let
+        search el ac =
+            if el.name == name then
+                Just "Match Value"
+            else
+                ac
+    in
+        List.foldl search Nothing doc.values
+
+
+renderType : LibraryType -> String
+renderType doc =
+    let
+        args =
+            List.foldl (\el ac -> ac ++ el ++ " ") "" doc.args
+
+        cases =
+            case doc.cases of
+                [] -> ""
+
+                values -> 
+                    "\n    = " ++ (values
+                        |> List.map (\(c1, c2) -> c1 ++ " " ++ String.join " " c2)
+                        |> String.join "\n    | ")
+
+        contents = """
+<div class="docs-entry" id =\"""" ++ doc.name ++ """">
+<div class="docs-annotation"><span class="hljs-keyword">type</span> <a style="font-weight: bold;">""" ++ doc.name ++ """</a> """ ++ args ++ cases ++ """
+</div>
+<div class="docs-comment">
+<div><p>""" ++ doc.comment ++ """</p>
+</div>
+</div>
+</div>
+"""
+    in
+        contents
+
+
+
+-- "type " ++ doc.name ++ " " ++ args ++ "\n\n" ++ doc.comment
+
+
+renderSubDocs : Document -> List String -> String
+renderSubDocs doc subDocs =
+    let
+        subDoc name =
+            [ findType doc name, findValue doc name ]
+                |> Maybe.oneOf
+                |> Maybe.withDefault ("Cannot find docs for " ++ name ++ "\n\n")
+    in
+        subDocs
+            |> List.map subDoc
+            |> String.join ""
+
+
 renderMarkdown : String -> Document -> Html Msg
 renderMarkdown md doc =
-    Markdown.toHtmlWith markdownOptions [] md
+    let
+        contents =
+            Regex.replace Regex.All atDocsRegex (replaceAtDocs doc) md
+    in
+        Markdown.toHtmlWith markdownOptions [] contents
 
 
 renderDocs : Model -> Document -> Html Msg
