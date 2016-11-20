@@ -31,7 +31,7 @@ update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
     case msg of
         NewRoute route ->
-            ({ model | route = route }, Cmd.none)
+            ({ model | route = route, loading = False }, Cmd.none)
         
         NewDocumentation data ->
             ({ model | documentation = data, loading = False }

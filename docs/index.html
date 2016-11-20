@@ -13,5 +13,10 @@
         <!-- ELM APP -->
     </div>
     <script src="assets/index.js"></script>
+    <script>
+        var app = Elm.Main.embed(document.getElementById("app"), {
+            documentationSrc : "documentation.json"
+        });
+    </script>
 </body>
 </html>

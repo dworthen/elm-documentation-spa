@@ -6,7 +6,9 @@ module.exports = {
   entry: './src/index.js',
   devtool: (argv.inline || argv.hot) ? "#eval" : "#source-map",
   output: {
-    filename: './docs/assets/index.js'
+    filename: './docs/assets/index.js',
+    libraryTarget : "var",
+    library : "Elm"
   },
   plugins: [
       new webpack.optimize.UglifyJsPlugin({compress: {warnings: false}})
