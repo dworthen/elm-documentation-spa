@@ -110,7 +110,7 @@ findValue doc name =
     let
         search el ac =
             if el.name == name then
-                Just "Match Value"
+                Just <| renderValue el
             else
                 ac
     in
@@ -132,7 +132,8 @@ renderType doc =
                         |> List.map (\(c1, c2) -> c1 ++ " " ++ String.join " " c2)
                         |> String.join "\n    | ")
 
-        contents = """
+    in
+        """
 <div class="docs-entry" id =\"""" ++ doc.name ++ """">
 <div class="docs-annotation"><span class="hljs-keyword">type</span> <a style="font-weight: bold;">""" ++ doc.name ++ """</a> """ ++ args ++ cases ++ """
 </div>
@@ -142,12 +143,21 @@ renderType doc =
 </div>
 </div>
 """
-    in
-        contents
 
 
-
--- "type " ++ doc.name ++ " " ++ args ++ "\n\n" ++ doc.comment
+renderValue : Value -> String
+renderValue doc =
+    """
+<div class="docs-entry" id =\"""" ++ doc.name ++ """">
+<div class="docs-annotation"><a style="font-weight: bold;">""" ++ doc.name ++ """</a> <span>:</span> """ ++ doc.valueType ++ """
+</div>
+<div class="docs-comment">
+<div class="highlight">
+""" ++ doc.comment ++ """
+</div>
+</div>
+</div>
+"""
 
 
 renderSubDocs : Document -> List String -> String
