@@ -76,7 +76,14 @@ markdownOptions =
 
 atDocsRegex : Regex.Regex
 atDocsRegex =
-    "@docs\\s([^\\n\\\\]*)"
+    "@docs\\s((?:(?:.|\\n)*?(?:\\n\\n)|.*))"
+        |> Regex.regex
+        |> Regex.caseInsensitive
+
+
+newLineRegex : Regex.Regex
+newLineRegex =
+    "\\n"
         |> Regex.regex
         |> Regex.caseInsensitive
 
@@ -86,7 +93,9 @@ replaceAtDocs doc match =
     case match.submatches of
         (Just h) :: _ ->
             h
-                |> String.split ", "
+                |> Regex.replace Regex.All newLineRegex (\_ -> "")
+                |> String.split ","
+                |> List.map String.trim
                 |> renderSubDocs doc
 
         _ ->
@@ -117,6 +126,18 @@ findValue doc name =
         List.foldl search Nothing doc.values
 
 
+findAlias : Document -> String -> Maybe String
+findAlias doc name =
+    let
+        search el ac =
+            if el.name == name then
+                Just <| "match alias\n"
+            else
+                ac
+    in
+        List.foldl search Nothing doc.aliases
+
+
 renderType : LibraryType -> String
 renderType doc =
     let
@@ -138,10 +159,12 @@ renderType doc =
 <div class="docs-annotation"><span class="hljs-keyword">type</span> <a style="font-weight: bold;">""" ++ doc.name ++ """</a> """ ++ args ++ cases ++ """
 </div>
 <div class="docs-comment">
-<div><p>""" ++ doc.comment ++ """</p>
+<div class="highlight">
+""" ++ doc.comment ++ """
 </div>
 </div>
 </div>
+
 """
 
 
@@ -157,6 +180,7 @@ renderValue doc =
 </div>
 </div>
 </div>
+
 """
 
 
@@ -164,7 +188,7 @@ renderSubDocs : Document -> List String -> String
 renderSubDocs doc subDocs =
     let
         subDoc name =
-            [ findType doc name, findValue doc name ]
+            [ findType doc name, findAlias doc name, findValue doc name ]
                 |> Maybe.oneOf
                 |> Maybe.withDefault ("Cannot find docs for " ++ name ++ "\n\n")
     in
